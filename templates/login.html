@@ -5,8 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - Gestión</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #e9ecef; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .login-container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); width: 350px; text-align: center; }
+        body { font-family: 'Arial', sans-serif; background-color: #e9ecef;
+               /* Modificación: Usar flex para centrar y permitir dos contenedores */
+               display: flex; justify-content: center; align-items: center;
+               min-height: 100vh; margin: 0;
+               gap: 40px; /* Espacio entre el formulario y el cuadro de info */
+        }
+        .login-container {
+            background: white; padding: 40px; border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); width: 350px;
+            text-align: center;
+        }
+        /* Nuevo estilo para el cuadro de información */
+        .info-box {
+            background-color: #f0f8ff; /* Azul muy claro */
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #b3e0ff; /* Borde azul claro */
+            width: 300px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+        .info-box h3 {
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #b3e0ff;
+            padding-bottom: 5px;
+        }
+        .info-box p {
+            margin: 8px 0;
+            font-size: 0.95em;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #495057;
+            display: inline-block;
+            width: 80px;
+        }
+        .info-value {
+            font-family: 'Courier New', monospace; /* Fuente monoespaciada para credenciales */
+            color: #28a745; /* Verde para destacar */
+            font-weight: 600;
+        }
         h2 { color: #007bff; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
         .form-field { margin-bottom: 20px; text-align: left; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #495057; font-size: 0.95em; }
@@ -55,7 +97,7 @@
             {% csrf_token %}
 
             <div class="form-field">
-                <label for="{{ form.username.id_for_label }}">Usuario (Rol de la Base de Datos)</label>
+                <label for="{{ form.username.id_for_label }}">Usuario</label>
                 {{ form.username }}
             </div>
 
@@ -67,6 +109,23 @@
 
             <button type="submit">Iniciar Sesión</button>
         </form>
+    </div>
+
+    <!-- CUADRO DE INFORMACIÓN PARA EL MAESTRO -->
+    <div class="info-box">
+        <h3>📊 Credenciales de Demostración</h3>
+
+        <p>
+            <span class="info-label">Usuario:</span>
+            <span class="info-value">ukvcr4dywisrnzzfwrgc</span>
+        </p>
+        <p>
+            <span class="info-label">Contraseña:</span>
+            <span class="info-value">qvalohPAP38VxzJcw1UiHxtG6bHFZY</span>
+        </p>
+        <p style="margin-top: 15px; border-top: 1px dashed #b3e0ff; padding-top: 10px; font-size: 0.85em;">
+            *Este usuario tiene permisos ALL, ideal para revisar todas las funciones del sistema.
+        </p>
     </div>
 
 </body>
