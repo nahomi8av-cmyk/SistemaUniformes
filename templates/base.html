@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Sistema de Uniformes{% endblock %}</title>
+        <style>
+            body { margin: 0; font-family: sans-serif; display: flex; min-height: 100vh; }
+            #header { background: #343a40; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 98%; top: 0; z-index: 1000; }
+            #sidebar { background: #2c3e50; color: white; width: 200px; padding-top: 60px; }
+            #sidebar a { color: white; padding: 10px 15px; text-decoration: none; display: block; border-bottom: 1px solid #495057; }
+            #sidebar a:hover { background: #1e2b36; }
+            #content { margin-left: 140px; padding: 70px 20px 20px 20px; flex-grow: 1; }
+            .card-container { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; }
+            .card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; width: 200px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; }
+            .card:hover { background: #e2e6ea; }
+        </style>
+    </head>
+<body>
+<div id="header">
+    <div>Sistema Uniformes | {% block header_title %}Menú Principal{% endblock %}</div>
+<div>
+{% if user.is_authenticated %}
+Usuario: **{{ user.username }}** |
+    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+    {% csrf_token %}
+        <button type="submit"
+        style="background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 0;
+        font-size: 1em;
+        text-decoration: underline;">
+            🔴 Cerrar Sesión
+        </button>
+    </form>
+{% else %}
+<a href="{% url 'login' %}" style="color: #ffc107; text-decoration: none;">Iniciar Sesión</a>
+{% endif %}
+</div>
+</div>
+    <div id="sidebar">
+        <a href="{% url 'menu_principal' %}">🏠 Inicio</a>
+        <a href="{% url 'nueva_venta' %}">🛒 Venta</a>
+        <a href="{% url 'buscar_pedido_pago' %}">💵 Pago</a>
+        <a href="{% url 'seleccionar_escuela' %}">👔 Uniformes</a>
+        <a href="{% url 'lista_clientes' %}">👨🏻‍🦱 Clientes</a>
+        <a href="{% url 'lista_escuelas' %}">🏫 Escuelas</a>
+        <a href="{% url 'lista_empleados' %}">👨🏻‍💼 Empleados</a>
+        <a href="{% url 'pedidos:listar_pedidos' %}">📦 Pedidos</a>
+        <a href="{% url 'listar_pagos' %}">💲 Pagos</a>
+        <a href="{% url 'listar_movimientos' %}">💸 Movimientos</a>
+        <a href="{% url 'listar_sesiones' %}">📅 CajaSesiones</a>
+                <div id="sidebar-logos">
+                    <img src="{% static 'images/Don_pedro_U_blanquito.png' %}" alt="Logo Principal del Sistema" title="Identidad Principal" style="width: 70%; margin-left: 27px; margin-top: 10px;">
+                    <img src="{% static 'images/kaltex-logo.svg' %}" alt="Logo Secundario / Patrocinador" title="Identidad Secundaria" style="width: 70%; margin-left: 25px; margin-top: 10px">
+                </div>
+    </div>
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+{% block extra_scripts %}{% endblock %}
+{% block script %}{% endblock %}
+</body>
+</html>
+

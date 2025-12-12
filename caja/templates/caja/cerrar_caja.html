@@ -1,0 +1,66 @@
+{% extends "base.html" %} 
+{% block content %}
+
+<h2>🔒 Cierre de Caja (ID: {{ caja.idCaja }})</h2>
+<hr>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<div style="display: flex; gap: 40px;">
+    <div style="width: 350px; padding: 20px; border: 1px solid #007bff; background-color: #e6f0ff;">
+        <h3>📊 Resumen de Movimientos</h3>
+        <p><strong>Fondo Inicial:</strong> ${{ fondo_inicial|floatformat:2 }}</p>
+        <p><strong>+ Ingresos en Efectivo de Pedidos:</strong> ${{ ingresos_efectivo|floatformat:2 }}</p>
+
+        {# NUEVO: Suma de Entradas y Resta de Salidas manuales #}
+        <p style="color: green;"><strong>+ Movimientos de ENTRADA:</strong> ${{ entradas_mov|floatformat:2|default:"0.00" }}</p>
+        <p style="color: red;"><strong>- Movimientos de SALIDA:</strong> ${{ salidas_mov|floatformat:2|default:"0.00" }}</p>
+
+        <hr style="margin: 10px 0;">
+        <h3 style="color: #007bff;">Dinero Esperado en Caja:</h3>
+        <p style="font-size: 1.5em; font-weight: bold;">${{ dinero_esperado|floatformat:2 }}</p>
+        <small>Abierta por: {{ caja.abierto_por.nombre }} el {{ caja.abierto_en|date:"d M H:i" }}</small>
+    </div>
+
+    <div style="flex-grow: 1;">
+        <h3>🔑 Datos para el Cierre</h3>
+        <form method="POST">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 20px;">
+                <label for="empleado_cierre_id">Empleado que Cierra la Caja:</label><br>
+                <select name="empleado_cierre_id" id="empleado_cierre_id" required style="padding: 8px; font-size: 1em; width: 300px; margin-top: 5px;">
+                    <option value="">--- Seleccionar Empleado ---</option>
+                    {% for emp in empleados %}
+                        <option value="{{ emp.idEmpleado }}"
+                            {% if emp.user.id == request.user.id %} selected {% endif %}> 
+                            {{ emp.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="conteo_final">Conteo Final (Dinero Físico en Caja):</label><br>
+                <input type="number" 
+                       name="conteo_final" 
+                       id="conteo_final" 
+                       placeholder="Ingresa el conteo total"
+                       step="0.01" 
+                       min="0" 
+                       required 
+                       style="padding: 10px; font-size: 1.1em; width: 250px; text-align: right;"><br>
+                <small>Este es el monto físico que hay en la caja.</small>
+            </div>
+            
+            <button type="submit" 
+                    style="padding: 15px 30px; background-color: #dc3545; color: white; border: none; cursor: pointer; font-size: 1.2em;">
+                Cerrar y Conciliar Caja
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

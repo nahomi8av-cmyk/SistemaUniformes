@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>🔍 Buscar Cliente</h2>
+<hr>
+
+<form method="GET" action="{% url 'buscar_cliente' %}">
+    <label for="q">Nombre o ID del Cliente:</label>
+    <input type="text" 
+           name="q" 
+           id="q" 
+           value="{{ query|default:'' }}"
+           placeholder="Ej: Juan Pérez o 15"
+           required 
+           style="padding: 10px; font-size: 1.1em; width: 300px;">
+    
+    <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white;">
+        Buscar
+    </button>
+</form>
+
+{% if query and not resultados %}
+    <p style="color: red; margin-top: 15px;">No se encontraron clientes para "{{ query }}".</p>
+{% endif %}
+
+{% if resultados %}
+    <h3 style="margin-top: 20px;">Resultados de la Búsqueda ({{ resultados.count }} encontrados)</h3>
+    <ul style="list-style-type: none; padding: 0;">
+        {% for cliente in resultados %}
+            <li style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                #{{ cliente.idCliente }} - {{ cliente.nombre }} (Tel: {{ cliente.telefono|default:'N/A' }})
+                <a href="{% url 'perfil_cliente' cliente_id=cliente.idCliente %}" 
+                   style="margin-left: 20px; text-decoration: none; color: #28a745; font-weight: bold;">
+                   Ver Perfil y Pedidos →
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}

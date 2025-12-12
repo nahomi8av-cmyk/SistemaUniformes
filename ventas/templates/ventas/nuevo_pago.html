@@ -1,0 +1,37 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+{% block header_title %}Gestión de Pagos{% endblock %}
+
+{% block content %}
+    <h2>💵 {{ titulo }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <h3>Buscar Pedido</h3>
+        <p>Ingresa el ID del Pedido o busca por cliente.</p>
+        
+        <label for="pedido_id">ID de Pedido:</label>
+        <input type="number" id="pedido_id" name="pedido_id" required>
+        <button type="button">Buscar</button>
+
+        <hr>
+
+        <h3>Datos del Abono</h3>
+        <p>Pedido Seleccionado: # [Mostrar datos del pedido]</p>
+        <p>Total: $0.00 | Abonado: $0.00 | **Pendiente: $0.00**</p>
+
+        <label for="monto">Monto a Abonar:</label>
+        <input type="number" id="monto" name="monto" step="0.01" required>
+
+        <label for="forma_pago">Forma de Pago:</label>
+        <select id="forma_pago" name="forma_pago">
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="TRANSFERENCIA">Transferencia</option>
+        </select>
+        
+        <hr>
+        <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none;">Registrar Pago</button>
+    </form>
+{% endblock %}

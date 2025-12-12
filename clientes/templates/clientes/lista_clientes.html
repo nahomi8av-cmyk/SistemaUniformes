@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+{% block header_title %}Gestión de Clientes{% endblock %}
+
+{% block content %}
+    <h2>👥 {{ titulo }}</h2>
+
+    <a href="{% url 'agregar_cliente' %}" class="card"
+       style="width: 200px; text-decoration: none; padding: 10px; display: inline-block; background-color: #28a745; color: white; text-align: center;">
+       ➕ Nuevo Cliente
+    </a>
+
+    <hr>
+
+    {% if clientes %}
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                <tr>
+                    <td>{{ cliente.idCliente }}</td>
+                    <td>{{ cliente.nombre }}</td>
+                    <td>{{ cliente.telefono|default:"N/A" }}</td>
+                    <td>
+                        <a href="{% url 'perfil_cliente' cliente_id=cliente.idCliente %}" style="color: #007bff; margin-right: 5px;">Ver Perfil</a> |
+                        <a href="{% url 'editar_cliente' cliente_id=cliente.idCliente %}" style="color: #ffc107; margin-right: 5px;">Editar</a> |
+                        <a href="{% url 'borrar_cliente' cliente_id=cliente.idCliente %}" style="color: #dc3545;">Borrar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay clientes registrados en el sistema.</p>
+    {% endif %}
+
+{% endblock %}

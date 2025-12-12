@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h2>✏️ Editar Movimiento de Caja #{{ movimiento.idMovimiento }}</h2>
+    <hr>
+    
+    <p style="margin-bottom: 20px;">
+        Caja Activa: <span style="font-weight: bold; color: #007bff;">#{{ movimiento.idcaja.idCaja }}</span>
+    </p>
+
+    {% if error %}
+        <div style="border: 1px solid #dc3545; padding: 15px; background-color: #f8d7da; color: #721c24; margin-bottom: 20px;">
+            <p>Error: {{ error }}</p>
+        </div>
+    {% endif %}
+
+    <form method="POST" style="max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+        {% csrf_token %}
+
+        <!-- Tipo de Movimiento -->
+        <div style="margin-bottom: 15px;">
+            <label for="tipo" style="display: block; margin-bottom: 5px; font-weight: bold;">Tipo de Movimiento:</label>
+            <select name="tipo" required style="padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="ENTRADA" {% if movimiento.tipo == 'ENTRADA' %}selected{% endif %}>ENTRADA (Ingreso de Dinero)</option>
+                <option value="SALIDA" {% if movimiento.tipo == 'SALIDA' %}selected{% endif %}>SALIDA (Egreso de Dinero)</option>
+            </select>
+        </div>
+
+        <!-- Monto -->
+        <div style="margin-bottom: 15px;">
+            <label for="monto" style="display: block; margin-bottom: 5px; font-weight: bold;">Monto ($):</label>
+            <input type="number" name="monto" step="0.01" min="0.01" required 
+                   value="{{ movimiento.monto|floatformat:2 }}"
+                   style="padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <!-- Descripción -->
+        <div style="margin-bottom: 20px;">
+            <label for="descripcion" style="display: block; margin-bottom: 5px; font-weight: bold;">Descripción (Detalle):</label>
+            <textarea name="descripcion" rows="3" required 
+                      style="padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 4px; resize: vertical;">{{ movimiento.descripcion }}</textarea>
+        </div>
+
+        <!-- Creado Por (Selección de Empleado) -->
+        <div style="margin-bottom: 20px;">
+            <label for="creado_por" style="display: block; margin-bottom: 5px; font-weight: bold;">Empleado que Registra:</label>
+            <select name="creado_por" required style="padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">--- Seleccione Empleado ---</option>
+                {% for empleado in empleados %}
+                    <option value="{{ empleado.idEmpleado }}" {% if empleado.idEmpleado == movimiento.creado_por.idEmpleado %}selected{% endif %}>
+                        {{ empleado.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" style="padding: 12px 25px; background-color: #ffc107; color: black; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em;">Guardar Cambios</button>
+        <a href="{% url 'listar_movimientos' %}" 
+           style="margin-left: 15px; color: #6c757d; text-decoration: none; padding: 10px 0;">Cancelar</a>
+    </form>
+
+{% endblock %}

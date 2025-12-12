@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>🗑️ Confirmar Eliminación</h2>
+<hr>
+
+<div style="border: 1px solid #dc3545; padding: 20px; background-color: #f8d7da; color: #721c24;">
+    <p style="font-size: 1.1em;">
+        ¿Estás seguro que deseas eliminar la escuela **{{ escuela.nombre }} (#{{ escuela.idEscuela }})**? 
+        Esta acción no se puede deshacer.
+    </p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" style="padding: 10px 20px; background-color: #dc3545; color: white; margin-top: 15px;">
+            Sí, Eliminar Permanentemente
+        </button>
+        <a href="{% url 'lista_escuelas' %}" style="margin-left: 15px; color: #721c24;">Cancelar</a>
+    </form>
+</div>
+
+{% endblock %}

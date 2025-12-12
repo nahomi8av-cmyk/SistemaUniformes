@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>✏️ Editar Empleado: {{ empleado.nombre }}</h2>
+<hr>
+
+<form method="POST">
+    {% csrf_token %}
+    
+    <label for="nombre">Nombre Completo:</label><br>
+    <input type="text" name="nombre" value="{{ empleado.nombre }}" required style="margin-bottom: 10px; padding: 8px; width: 350px;"><br>
+
+    <label for="usuario">Nombre de Usuario:</label><br>
+    <input type="text" name="usuario" value="{{ empleado.usuario }}" required style="margin-bottom: 10px; padding: 8px; width: 350px;"><br>
+    
+    <label for="clave">Nueva Contraseña (Dejar vacío para no cambiar):</label><br>
+    <input type="password" name="clave" style="margin-bottom: 20px; padding: 8px; width: 350px;"><br>
+
+    <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white;">Guardar Cambios</button>
+    <a href="{% url 'lista_empleados' %}" style="margin-left: 15px; color: #6c757d;">Cancelar</a>
+</form>
+
+{% endblock %}

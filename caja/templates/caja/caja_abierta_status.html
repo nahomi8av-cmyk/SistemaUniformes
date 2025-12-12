@@ -1,0 +1,21 @@
+{% extends "base.html" %} 
+{% block content %}
+
+<h2>⚠️ Caja ya Abierta</h2>
+<hr>
+
+<p style="color: green; font-size: 1.1em;">
+    {{ mensaje }}
+</p>
+
+{% if caja %}
+    <div style="border: 1px solid #ccc; padding: 15px; background-color: #f9f9f9;">
+        <p>Para abrir una nueva, primero debes cerrar la caja actual.</p>
+        </div>
+{% endif %}
+
+<p style="margin-top: 20px;">
+    Puedes continuar con las operaciones en la <a href="{% url 'menu_principal' %}">pantalla principal</a>.
+</p>
+
+{% endblock %}

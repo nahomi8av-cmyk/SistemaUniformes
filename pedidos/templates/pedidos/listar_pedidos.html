@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Pedidos{% endblock %}
+
+{% block content %}
+    <h1 style="color: #007bff; margin-bottom: 20px;">
+        Gestión de Pedidos
+    </h1>
+
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'menu_principal' %}" class="btn btn-secondary" style="background-color: #6c757d; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">
+            ← Volver al Menú Principal
+        </a>
+    </div>
+
+    <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 20px; font-family: 'Arial', sans-serif;">
+        <thead>
+            <tr style="background-color: #007bff; color: white;">
+                <th style="padding: 12px;">ID Pedido</th>
+                <th style="padding: 12px;">Cliente</th>
+                <th style="padding: 12px;">Creado Por</th>
+                <th style="padding: 12px;">Fecha</th>
+                <th style="padding: 12px;">Total</th>
+                <th style="padding: 12px;">Abono</th>
+                <th style="padding: 12px;">Estado</th>
+                <th style="padding: 12px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in pedidos %}
+            <tr style="border-bottom: 1px solid #ddd; background-color: {% if forloop.counter is odd %}#f9f9f9{% else %}#ffffff{% endif %};">
+                <td style="padding: 10px; text-align: center;">{{ pedido.idPedido }}</td>
+                <!-- Usamos la relación idCliente para obtener el nombre del Cliente -->
+                <td style="padding: 10px;">{{ pedido.idCliente.nombre }}</td>
+                <!-- Usamos la relación creado_por para obtener el nombre del Empleado -->
+                <td style="padding: 10px;">{{ pedido.creado_por.nombre }}</td>
+                <td style="padding: 10px; text-align: center;">{{ pedido.fecha|date:"Y-m-d H:i" }}</td>
+                <td style="padding: 10px; text-align: right; font-weight: bold;">${{ pedido.total|floatformat:2 }}</td>
+                <td style="padding: 10px; text-align: right; color: #28a745;">${{ pedido.abono_acumulado|floatformat:2 }}</td>
+                <td style="padding: 10px; text-align: center;">
+                    <span style="padding: 5px 8px; border-radius: 4px; font-size: 0.9em;
+                        background-color:
+                            {% if pedido.estado == 'PENDIENTE' %}#ffc107{% comment %} Amarillo {% endcomment %}
+                            {% elif pedido.estado == 'PAGADO' %}#28a745{% comment %} Verde {% endcomment %}
+                            {% elif pedido.estado == 'ENTREGADO' %}#17a2b8{% comment %} Azul Claro {% endcomment %}
+                            {% else %}#dc3545{% comment %} Rojo (Cancelado) {% endcomment %}
+                            {% endif %};
+                        color: white;">
+                        {{ pedido.estado }}
+                    </span>
+                </td>
+                <td style="padding: 10px; text-align: center;">
+                    <a href="{% url 'detalle_pedido' pedido.idPedido %}" style="margin-right: 10px; color: #1abc9c; text-decoration: none; font-weight: bold;">
+                        Detalle
+                    </a>
+                    <a href="{% url 'pedidos:editar_pedido' pedido.idPedido %}" style="margin-right: 10px; color: #007bff; text-decoration: none;">
+                        Editar
+                    </a>
+                    |
+                    <a href="{% url 'pedidos:eliminar_pedido' pedido.idPedido %}" style="margin-left: 10px; color: #dc3545; text-decoration: none;">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="padding: 20px; text-align: center; color: #6c757d;">No hay pedidos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

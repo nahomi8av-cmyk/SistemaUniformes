@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>⚠️ Confirmar Eliminación de Uniforme Principal</h2>
+<hr>
+
+{% if error %}
+    <!-- Muestra errores si hay IntegrityError (ej: si tiene variantes o pedidos asociados) -->
+    <div style="border: 1px solid #dc3545; padding: 15px; background-color: #f8d7da; color: #721c24; margin-bottom: 20px;">
+        <p>Error de Eliminación: {{ error }}</p>
+        <p>No se puede eliminar el uniforme hasta que no borres todas sus variantes (tallas/stock) asociadas.</p>
+    </div>
+    
+    <!-- Enlace para ir a gestionar las variantes -->
+    <a href="{% url 'gestionar_variantes' uniforme_id=uniforme.idUniforme %}" 
+       style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;">
+        Ir a Gestionar Variantes
+    </a>
+    
+{% else %}
+    <p style="font-size: 1.1em; margin-bottom: 20px;">
+        ¿Estás seguro de que deseas eliminar permanentemente el siguiente uniforme principal?
+    </p>
+
+    <div style="border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; background-color: #fff;">
+        <strong>ID Uniforme:</strong> {{ uniforme.idUniforme }}<br>
+        <strong>Nombre:</strong> <span style="font-weight: bold; color: #007bff;">{{ uniforme.nombre }}</span><br>
+        <strong>Escuela:</strong> {{ uniforme.idEscuela.nombre }}<br>
+        <strong>Descripción:</strong> {{ uniforme.descripcion|default:"N/A" }}<br>
+    </div>
+
+    <!-- Formulario para enviar la solicitud POST de eliminación -->
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit"
+                style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Sí, Eliminar Permanentemente
+        </button>
+
+        <!-- Enlace de CANCELAR CORREGIDO: Vuelve al listado de la escuela actual. -->
+        <a href="{% url 'lista_uniformes' escuela_id=uniforme.idEscuela.idEscuela %}"
+           style="margin-left: 15px; color: #6c757d; text-decoration: none;">
+            Cancelar y Volver
+        </a>
+    </form>
+{% endif %}
+
+{% endblock %}

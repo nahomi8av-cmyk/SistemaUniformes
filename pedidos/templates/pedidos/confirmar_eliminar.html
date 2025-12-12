@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+    <h1 style="color: #dc3545; margin-bottom: 20px;">
+        ⚠️ Confirmar Eliminación de Pedido
+    </h1>
+    
+    <div style="max-width: 500px; padding: 25px; border: 2px solid #dc3545; border-radius: 8px; background-color: #f8d7da;">
+        <p style="font-size: 1.2em; font-weight: bold; color: #721c24;">
+            ¿Está seguro que desea eliminar el Pedido #{{ pedido.idPedido }}?
+        </p>
+        <p style="color: #721c24;">
+            Esta acción es irreversible y eliminará todos los detalles asociados al pedido.
+        </p>
+
+        <ul style="list-style-type: none; padding: 0; margin-top: 15px;">
+            <li><strong>Cliente:</strong> {{ pedido.idCliente.nombre }}</li>
+            <li><strong>Total:</strong> <span style="font-weight: bold;">${{ pedido.total|floatformat:2 }}</span></li>
+            <li><strong>Estado:</strong> {{ pedido.estado }}</li>
+        </ul>
+
+        <!-- El formulario debe enviar POST a la misma URL para ejecutar la función de borrado en la vista -->
+        <form method="post" action="{% url 'pedidos:eliminar_pedido' pedido.idPedido %}" style="margin-top: 25px;">
+            {% csrf_token %}
+            <button type="submit" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                Sí, Eliminar Permanentemente
+            </button>
+            <a href="{% url 'pedidos:listar_pedidos' %}" style="margin-left: 15px; padding: 10px 20px; background-color: #6c757d; color: white; border-radius: 4px; text-decoration: none;">
+                Cancelar
+            </a>
+        </form>
+
+        {% if error %}
+            <p style="color: #721c24; margin-top: 15px;">** ERROR: {{ error }}</p>
+        {% endif %}
+    </div>
+{% endblock %}

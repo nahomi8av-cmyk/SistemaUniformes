@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+{% block header_title %}Gestión de Ventas{% endblock %}
+
+{% block content %}
+    <h2>🛒 {{ titulo }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 20px;">
+            <h3>1. Cliente</h3>
+            <select name="cliente_id" required style="padding: 8px; width: 300px;">
+                <option value="">--- Seleccionar Cliente ---</option>
+                {% for cliente in clientes %}
+                    <option value="{{ cliente.idCliente }}">{{ cliente.nombre }} (Tel: {{ cliente.telefono|default:"N/A" }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <hr>
+
+        <div style="margin-bottom: 20px;">
+        <h3>1B. Empleado</h3>
+        <select name="empleado_id" required style="padding: 8px; width: 300px;">
+            <option value="">--- Seleccionar Empleado ---</option>
+            {% for empleado in empleados %}
+                <option value="{{ empleado.idEmpleado }}">{{ empleado.nombre }}</option>
+            {% endfor %}
+        </select>
+        </div>
+        <hr>
+
+        <div style="margin-bottom: 20px;">
+            <h3>2. Notas del Pedido (Bordado, Instrucciones, etc.)</h3>
+            <textarea name="notas_pedido" rows="4" style="width: 100%; padding: 8px; border: 1px solid #ccc;"
+                      placeholder="Ej: Bordar el nombre 'Nahomi' en la manga izquierda."></textarea>
+        </div>
+
+        <hr>
+        <h3>2B. Detalle del Pedido</h3>
+        <button type="button" onclick="agregarItem()" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; margin-bottom: 10px;">
+            ➕ Añadir Ítem
+        </button>
+
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th>Producto / Talla</th>
+                    <th>Precio Unitario</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th></th> </tr>
+            </thead>
+            <tbody id="detalle-items">
+                </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right; font-weight: bold;">TOTAL:</td>
+                    <td id="total-general" style="font-weight: bold;">$0.00</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <hr style="margin-top: 20px;">
+
+        <hr style="margin-top: 20px;">
+        <h3>3. Pago Inicial</h3>
+        <div style="margin-bottom: 15px;">
+            <label for="forma_pago">Forma de Pago:</label>
+            <select name="forma_pago" required style="padding: 8px; width: 150px;">
+                <option value="EFECTIVO">EFECTIVO</option>
+                <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+
+            </select>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <label for="monto_abonado">Monto Abonado:</label>
+            <input type="number" name="monto_abonado" id="monto_abonado" value="0.00" step="0.01" min="0"
+                   style="padding: 8px; width: 150px; text-align: right;">
+            <small>Dejar en 0 si solo se quiere registrar el pedido sin abono.</small>
+            <!--
+            <div id="saldo_pendiente" style="margin-top: 10px; font-weight: bold; color: red;">
+                Saldo Pendiente: ${{ saldo_pendiente|floatformat:2 }}
+            </div>-->
+        </div>
+        <button type="submit" style="padding: 15px 30px; background-color: #28a745; color: white; border: none; font-size: 1.1em;">
+            ✅ Guardar Pedido y Continuar
+        </button>
+    </form>
+{% endblock %}
+
+### 2. Plantilla de Fila Oculta (Blueprint)
+
+Colocaremos la plantilla de la fila que queremos clonar dentro de una etiqueta `script` para que el navegador no la muestre, pero esté lista para que JavaScript la use.
+
+{% block extra_scripts %}
+<script id="item-template" type="text/template">
+    <tr class="item-row">
+        <td>
+            <select name="variante_id[]" onchange="calcularFila(this.parentNode.parentNode)" required style="width: 100%;">
+                <option value="">--- Seleccionar Uniforme ---</option>
+                </select>
+        </td>
+        <td>
+            <input type="number" name="precio_unitario[]" value="0.00" step="0.01" min="0" onchange="calcularFila(this.parentNode.parentNode)" required style="width: 90px; text-align: right;">
+        </td>
+        <td>
+            <input type="number" name="cantidad[]" value="1" min="1" onchange="calcularFila(this.parentNode.parentNode)" required style="width: 60px; text-align: right;">
+        </td>
+        <td class="subtotal-cell">$0.00</td>
+        <td>
+            <button type="button" onclick="eliminarFila(this)" style="background: red; color: white; border: none; padding: 5px 8px;">X</button>
+        </td>
+    </tr>
+</script>
+{% endblock %}
+
+{% block script %}
+<script>
+    // 1. DEFINICIONES GLOBALES DE VARIABLES
+    let itemCounter = 0;
+    // La variable de variantes se define AHORA, al inicio del script
+    window.GLOBAL_VARIANTES_DATA = JSON.parse('{{ variantes|safe|escapejs }}');
+
+    // 2. DEFINICIONES GLOBALES DE FUNCIONES (Deben estar ANTES de usarse)
+
+    function calcularTotal() {
+        let totalGeneral = 0;
+        document.querySelectorAll('.item-row').forEach(row => {
+            const subtotalText = row.querySelector('.subtotal-cell').textContent.replace('$', '');
+            totalGeneral += parseFloat(subtotalText) || 0;
+        });
+        document.getElementById('total-general').textContent = '$' + totalGeneral.toFixed(2);
+    }
+
+    function calcularFila(row) {
+        const precioInput = row.querySelector('input[name="precio_unitario[]"]');
+        const cantidadInput = row.querySelector('input[name="cantidad[]"]');
+        const subtotalCell = row.querySelector('.subtotal-cell');
+
+        const precio = parseFloat(precioInput.value) || 0;
+        const cantidad = parseInt(cantidadInput.value) || 0;
+        const subtotal = precio * cantidad;
+
+        subtotalCell.textContent = '$' + subtotal.toFixed(2);
+        calcularTotal();
+    }
+
+    function eliminarFila(button) {
+        const row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        calcularTotal();
+    }
+
+    // Función para poblar el selector de la nueva fila
+    function poblarSelector(row) {
+        const varianteSelect = row.querySelector('select[name="variante_id[]"]');
+        const variantes = window.GLOBAL_VARIANTES_DATA;
+
+        // Crea las opciones del selector
+        variantes.forEach(variante => {
+            const option = document.createElement('option');
+            option.value = variante.idVariante;
+            option.textContent = `${variante.idUniforme__nombre} - Talla ${variante.talla} ($${variante.precio})`;
+            option.setAttribute('data-precio', variante.precio);
+            varianteSelect.appendChild(option);
+        });
+
+        varianteSelect.insertAdjacentHTML('afterbegin', '<option value="" data-precio="0.00">--- Seleccionar Uniforme ---</option>');
+    }
+
+    // FUNCIÓN PRINCIPAL LLAMADA POR EL BOTÓN
+    function agregarItem() {
+        const template = document.getElementById('item-template').innerHTML;
+        const tbody = document.getElementById('detalle-items');
+        const newRow = tbody.insertRow();
+        newRow.innerHTML = template;
+        newRow.className = 'item-row';
+        itemCounter++;
+
+        // 3. PUEBLA EL SELECTOR Y AGREGA ESCUCHADORES (LISTENERS)
+        poblarSelector(newRow);
+
+        // Agregar listener para el cambio de variante (para actualizar el precio)
+        newRow.querySelector('select[name="variante_id[]"]').addEventListener('change', function(event) {
+            const fila = event.target.parentNode.parentNode;
+            const selectedOption = event.target.options[event.target.selectedIndex];
+            const precioInput = fila.querySelector('input[name="precio_unitario[]"]');
+
+            const nuevoPrecio = selectedOption.getAttribute('data-precio') || 0.00;
+            precioInput.value = parseFloat(nuevoPrecio).toFixed(2);
+
+            calcularFila(fila);
+        });
+
+        calcularTotal();
+    }
+
+    // 4. FUNCIÓN PARA INICIALIZAR LA PÁGINA
+    function initVentas() {
+        // Añadir el primer ítem al cargar la página
+        agregarItem();
+    }
+
+    // LLAMADA A LA FUNCIÓN DE INICIALIZACIÓN
+    window.onload = initVentas;
+
+   window.addEventListener('error', e => {
+    console.error('[CAPTURE ERROR]', e.message, 'at', e.filename + ':' + e.lineno);
+    (window.__LAST_JS_ERRORS__ = window.__LAST_JS_ERRORS__ || []).push({
+      msg: e.message, file: e.filename, line: e.lineno, col: e.colno
+    });
+  });
+    // Forzar exposición global y mostrar diagnóstico
+  try {
+    if (typeof agregarItem === 'function') {
+      window.agregarItem = agregarItem;
+      console.log('[FIX] agregarItem expuesta a window');
+    } else {
+      console.warn('[FIX] agregarItem NO existe aquí (verificar orden/errores):', typeof agregarItem);
+    }
+  } catch (e) {
+    console.error('[FIX] Error al exponer agregarItem:', e);
+  }
+</script>
+{% endblock %}

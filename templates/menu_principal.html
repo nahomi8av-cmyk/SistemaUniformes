@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Menú Principal - Sistema Uniformes{% endblock %}
+{% block header_title %}Inicio{% endblock %}
+
+{% block content %}
+    <h2>🚀 Acciones Rápidas</h2>
+
+    <div class="card-container">
+        <a class="card" href="{% url 'nueva_venta' %}" style="text-decoration: none">
+            <h3>Nuevo Pedido</h3>
+            <p>Comenzar una nueva transacción de uniformes.</p>
+        </a>
+
+        <a class="card" href="{% url 'buscar_pedido_pago' %}"  style="text-decoration: none">
+            <h3>Nuevo Pago</h3>
+            <p>Registrar abonos a pedidos existentes.</p>
+        </a>
+        
+        <a class="card" href="{% url 'buscar_cliente' %}"  style="text-decoration: none">
+            <h3>Buscar Cliente</h3>
+            <p>Acceder a historial de pedidos y datos.</p>
+        </a>
+
+        <div class="card tarjeta-caja">
+            {% if caja_abierta %}
+                <h3 style="color: #dc3545;">Caja Abierta (ID: {{ caja_abierta.idCaja }})</h3>
+                <p>Fondo: ${{ caja_abierta.fondo_inicial|floatformat:2 }}</p>
+                <a href="{% url 'cerrar_caja' %}" class="btn-accion cerrar-caja"
+                   style="background-color: #dc3545; color: white; padding: 10px; display: block; text-align: center; margin-top: 10px; border-radius: 5px;">
+                    <i class="fas fa-lock"></i> Cerrar Caja
+                </a>
+            {% else %}
+                <h3 style="color: #28a745;">Caja Cerrada</h3>
+                <p>Iniciar operaciones para registrar pagos.</p>
+                <a href="{% url 'abrir_caja' %}" class="btn-accion abrir-caja"
+                   style="background-color: #28a745; color: white; padding: 10px; display: block; text-align: center; margin-top: 10px; border-radius: 5px;">
+                    <i class="fas fa-unlock"></i> Abrir Caja
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% endblock %}

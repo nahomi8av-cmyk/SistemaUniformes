@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h2>🗑️ Confirmar Eliminación de Movimiento</h2>
+    <hr>
+    
+    <div style="border: 1px solid #f8d7da; padding: 20px; background-color: #fff; border-radius: 8px;">
+        <p style="font-size: 1.1em; margin-bottom: 20px; color: #dc3545; font-weight: bold;">
+            ¿Está seguro de que desea eliminar el siguiente movimiento de caja?
+        </p>
+
+        <div style="padding: 15px; background-color: #f7f7f7; border-radius: 4px; margin-bottom: 20px;">
+            <strong>ID Movimiento:</strong> {{ movimiento.idMovimiento }}<br>
+            <strong>Caja:</strong> #{{ movimiento.idcaja.idCaja }}<br>
+            <strong>Tipo:</strong> <span style="font-weight: bold; color: {% if movimiento.tipo == 'ENTRADA' %}#28a745{% else %}#dc3545{% endif %};">{{ movimiento.tipo }}</span><br>
+            <strong>Monto:</strong> <span style="font-weight: bold;">${{ movimiento.monto|floatformat:2 }}</span><br>
+            <strong>Descripción:</strong> {{ movimiento.descripcion }}<br>
+            <strong>Fecha:</strong> {{ movimiento.fecha|date:"Y-m-d H:i" }}
+        </div>
+
+        <p style="margin-bottom: 20px; color: #6c757d;">
+            Nota: Al eliminar este movimiento, el cálculo del "Dinero Esperado" en la caja actual será ajustado.
+        </p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" 
+                    style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Sí, Eliminar
+            </button>
+            <a href="{% url 'listar_movimientos' %}" 
+               style="margin-left: 15px; color: #6c757d; text-decoration: none;">Cancelar</a>
+        </form>
+    </div>
+
+{% endblock %}

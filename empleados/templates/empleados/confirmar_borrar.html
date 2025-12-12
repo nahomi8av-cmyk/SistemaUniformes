@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>🗑️ Confirmar Eliminación</h2>
+<hr>
+
+{% if error %}
+    <div style="border: 1px solid #dc3545; padding: 15px; background-color: #f8d7da; color: #721c24; margin-bottom: 20px;">
+        <p>{{ error }}</p>
+    </div>
+{% endif %}
+
+<div style="border: 1px solid #dc3545; padding: 20px; background-color: #f9f9f9;">
+    <p style="font-size: 1.1em;">
+        ¿Estás seguro que deseas eliminar al empleado **{{ empleado.nombre }} (#{{ empleado.idEmpleado }})**? 
+        Esta acción es permanente y puede fallar si el empleado tiene registros importantes (cajas, pedidos) asociados.
+    </p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" style="padding: 10px 20px; background-color: #dc3545; color: white; margin-top: 15px;">
+            Sí, Eliminar Permanentemente
+        </button>
+        <a href="{% url 'lista_empleados' %}" style="margin-left: 15px; color: #721c24;">Cancelar</a>
+    </form>
+</div>
+
+{% endblock %}

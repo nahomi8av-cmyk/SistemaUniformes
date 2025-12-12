@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <!-- 💥 ENLACE CORREGIDO: Necesita el ID de la escuela del uniforme 💥 -->
+    <a href="{% url 'lista_uniformes' escuela_id=uniforme.idEscuela.idEscuela %}"
+       style="color: #6c757d; text-decoration: none; margin-bottom: 15px; display: inline-block; font-weight: bold;">
+       ← Volver a la Lista de Uniformes ({{ uniforme.idEscuela.nombre }})
+    </a>
+
+    <h2>📋 Variantes (Tallas y Stock) para: {{ uniforme.nombre }}</h2>
+    <p>Escuela Asociada: <strong>{{ uniforme.idEscuela.nombre }}</strong></p>
+    <hr>
+
+    <!-- Botón para agregar nueva variante -->
+    <a href="{% url 'agregar_variante' uniforme_id=uniforme.idUniforme %}"
+       style="text-decoration: none; padding: 10px 20px; display: inline-block; background-color: #28a745; color: white; text-align: center; border-radius: 5px; margin-bottom: 20px;">
+       ➕ Agregar Nueva Talla/Stock
+    </a>
+
+    {% if variantes %}
+        <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th style="padding: 10px; width: 5%;">ID</th>
+                    <th style="padding: 10px; width: 15%;">Talla</th>
+                    <th style="padding: 10px; width: 15%;">Precio</th>
+                    <th style="padding: 10px; width: 15%;">Stock</th>
+                    <th style="padding: 10px; width: 30%;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for variante in variantes %}
+                <tr>
+                    <td style="padding: 10px; text-align: center;">{{ variante.idVariante }}</td>
+                    <td style="padding: 10px; text-align: center;">{{ variante.talla }}</td>
+                    <td style="padding: 10px; text-align: right;">${{ variante.precio|floatformat:2 }}</td>
+                    <td style="padding: 10px; text-align: center;">{{ variante.stock }}</td>
+                    <td style="padding: 10px; text-align: center;">
+                        <a href="{% url 'editar_variante' variante_id=variante.idVariante %}"
+                           style="color: #ffc107; margin-right: 15px; text-decoration: none;">
+                           ✏️ Editar
+                        </a>
+                        |
+                        <a href="{% url 'borrar_variante' variante_id=variante.idVariante %}"
+                           style="color: #dc3545; margin-left: 15px; text-decoration: none;">
+                           🗑️ Borrar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin-top: 20px;">No hay tallas/variantes registradas para este uniforme.</p>
+    {% endif %}
+
+{% endblock %}

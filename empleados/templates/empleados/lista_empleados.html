@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+{% block header_title %}Gestión de Empleados{% endblock %}
+
+{% block content %}
+    <h2>👨‍💼 {{ titulo }}</h2>
+
+    <a href="{% url 'agregar_empleado' %}" 
+       style="width: 200px; text-decoration: none; padding: 10px; display: inline-block; background-color: #28a745; color: white; text-align: center; border-radius: 5px; margin-bottom: 20px;">
+       ➕ Agregar Nuevo Empleado
+    </a>
+    
+    <hr>
+
+    {% if empleados %}
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for empleado in empleados %}
+                <tr>
+                    <td style="padding: 10px;">{{ empleado.idEmpleado }}</td>
+                    <td style="padding: 10px;">{{ empleado.nombre }}</td>
+                    <td style="padding: 10px;">{{ empleado.usuario }}</td>
+                    <td style="padding: 10px; text-align: center;">
+                        <a href="{% url 'editar_empleado' empleado_id=empleado.idEmpleado %}" style="color: #ffc107; margin-right: 10px;">Editar</a>
+                        <a href="{% url 'borrar_empleado' empleado_id=empleado.idEmpleado %}" style="color: #dc3545;">Borrar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay empleados registrados en el sistema.</p>
+    {% endif %}
+
+{% endblock %}

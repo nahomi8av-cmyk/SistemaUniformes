@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>👤 Perfil del Cliente: {{ cliente.nombre }}</h2>
+<hr>
+
+<div style="display: flex; gap: 30px;">
+    <div style="width: 300px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9;">
+        <h3>Datos de Contacto</h3>
+        <ul>
+            <li><strong>ID:</strong> #{{ cliente.idCliente }}</li>
+            <li><strong>Teléfono:</strong> {{ cliente.telefono|default:'N/A' }}</li>
+
+        </ul>
+        <h3 style="margin-top: 15px;">Estadísticas</h3>
+        <ul>
+            <li><strong>Total de Pedidos:</strong> {{ num_pedidos }}</li>
+            <li><strong>Monto Total Gastado:</strong> ${{ total_gastado|floatformat:2 }}</li>
+        </ul>
+    </div>
+
+    <div style="flex-grow: 1;">
+        <h3>Historial de Pedidos ({{ historial.count }})</h3>
+        {% if historial %}
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #eee;">
+                        <th style="padding: 10px; text-align: left;">Pedido #</th>
+                        <th style="padding: 10px; text-align: left;">Fecha</th>
+                        <th style="padding: 10px; text-align: right;">Total</th>
+                        <th style="padding: 10px; text-align: right;">Abonado</th>
+                        <th style="padding: 10px; text-align: left;">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in historial %}
+                    <tr>
+                        <td style="padding: 10px;">{{ pedido.idPedido }}</td>
+                        <td style="padding: 10px;">{{ pedido.fecha|date:"d M Y" }}</td>
+                        <td style="padding: 10px; text-align: right;">${{ pedido.total|floatformat:2 }}</td>
+                        <td style="padding: 10px; text-align: right;">${{ pedido.abono_acumulado|floatformat:2 }}</td>
+                        <td style="padding: 10px; font-weight: bold;">{{ pedido.estado }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Este cliente aún no tiene pedidos registrados.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>➕ Agregar Nueva Escuela</h2>
+<hr>
+
+<form method="POST">
+    {% csrf_token %}
+    
+    <label for="nombre">Nombre de la Escuela:</label><br>
+    <input type="text" name="nombre" required style="margin-bottom: 10px; padding: 8px; width: 350px;"><br>
+
+    <button type="submit" style="padding: 10px 20px; background-color: #28a745; color: white;">Guardar Escuela</button>
+    <a href="{% url 'lista_escuelas' %}" style="margin-left: 15px; color: #6c757d;">Cancelar</a>
+</form>
+
+{% endblock %}

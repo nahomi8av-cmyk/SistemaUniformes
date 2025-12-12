@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Sesiones de Caja{% endblock %}
+
+{% block content %}
+    <h1 style="color: #6C5CE7; margin-bottom: 20px;">
+        🏛️ Gestión de Sesiones de Caja
+    </h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'menu_principal' %}" class="btn btn-secondary" style="background-color: #6c757d; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">
+            ← Volver al Menú Principal
+        </a>
+    </div>
+
+    <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 20px; font-family: 'Arial', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <thead>
+            <tr style="background-color: #6C5CE7; color: white;">
+                <th style="padding: 12px; width: 4%;">ID</th>
+
+                <th style="padding: 12px; width: 10%;">Apertura</th>
+                <th style="padding: 12px; width: 9%;">Empleado Abre</th>
+
+                {# NUEVAS COLUMNAS DE CIERRE #}
+                <th style="padding: 12px; width: 10%;">Cierre</th>
+                <th style="padding: 12px; width: 9%;">Empleado Cierra</th>
+
+                <th style="padding: 12px; width: 8%;">Fondo Inicial</th>
+                <th style="padding: 12px; width: 8%;">Dinero Esperado</th>
+                <th style="padding: 12px; width: 8%;">Conteo Final</th>
+                <th style="padding: 12px; width: 8%;">Diferencia</th>
+                <th style="padding: 12px; width: 11%;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sesion in sesiones %}
+            <tr style="border-bottom: 1px solid #ddd; background-color: {% if forloop.counter is odd %}#f9f9f9{% else %}#ffffff{% endif %};">
+
+                {# ID #}
+                <td style="padding: 10px; text-align: center;">{{ sesion.idCaja|default:"Error" }}</td>
+
+                {# Apertura (Fecha) #}
+                <td style="padding: 10px; text-align: center;">{{ sesion.abierto_en|date:"Y-m-d H:i"|default:"N/A" }}</td>
+
+                {# Empleado Abre #}
+                <td style="padding: 10px; text-align: center;">{{ sesion.abierto_por.nombre|default:"N/A" }}</td>
+
+                {# Cierre (Fecha) #}
+                <td style="padding: 10px; text-align: center; color: {% if sesion.cerrado_en %}#1abc9c{% else %}#e74c3c{% endif %};">
+                    {% if sesion.cerrado_en %}
+                        {{ sesion.cerrado_en|date:"Y-m-d H:i" }}
+                    {% else %}
+                        ABIERTA
+                    {% endif %}
+                </td>
+
+                {# Empleado Cierra (NUEVO) #}
+                <td style="padding: 10px; text-align: center;">{{ sesion.cerrado_por.nombre|default:"N/A" }}</td>
+
+                {# Fondo Inicial #}
+                <td style="padding: 10px; text-align: right; font-weight: bold; color: #3498db;">${{ sesion.fondo_inicial|floatformat:2|default:"0.00" }}</td>
+
+                {# Dinero Esperado #}
+                <td style="padding: 10px; text-align: right; color: #28a745;">
+                    ${{ sesion.dinero_esperado|floatformat:2|default:"N/A" }}
+                </td>
+
+                {# Conteo Final #}
+                <td style="padding: 10px; text-align: right; color: #1abc9c;">
+                    ${{ sesion.conteo_final|floatformat:2|default:"N/A" }}
+                </td>
+
+                {# Diferencia (resaltada si no es cero) #}
+                {% with diferencia=sesion.diferencia|default:0 %}
+                <td style="padding: 10px; text-align: right; font-weight: bold; color:
+                    {% if sesion.cerrado_en %}
+                        {% if diferencia < 0 %}#dc3545{% elif diferencia > 0 %}#ffc107{% else %}#6c757d{% endif %}
+                    {% else %}
+                        #6c757d
+                    {% endif %}
+                ;">
+                    {% if sesion.cerrado_en %}
+                        ${{ diferencia|floatformat:2 }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                {% endwith %}
+
+                <td style="padding: 10px; text-align: center;">
+                    {% if sesion.idCaja %}
+                        <a href="{% url 'editar_sesion' sesion.idCaja %}" style="margin-right: 10px; color: #007bff; text-decoration: none;">
+                            Editar
+                        </a>
+                        |
+                        <a href="{% url 'eliminar_sesion' sesion.idCaja %}" style="margin-left: 10px; color: #dc3545; text-decoration: none;">
+                            Eliminar
+                        </a>
+                    {% else %}
+                        <span style="color: #6c757d;">ID Faltante</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="11" style="padding: 20px; text-align: center; color: #6c757d;">No hay sesiones de caja registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>⚠️ Confirmar Eliminación de Variante</h2>
+<hr>
+
+{% if error %}
+    <!-- Muestra errores si hay restricciones de integridad (ej: si tiene pedidos asociados) -->
+    <div style="border: 1px solid #dc3545; padding: 15px; background-color: #f8d7da; color: #721c24; margin-bottom: 20px;">
+        <p>{{ error }}</p>
+    </div>
+{% else %}
+    <p style="font-size: 1.1em; margin-bottom: 20px;">
+        ¿Estás seguro de que deseas eliminar la siguiente variante?
+    </p>
+
+    <div style="border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; background-color: #fff;">
+        <strong>Uniforme Principal:</strong> {{ variante.idUniforme.nombre }}<br>
+        <strong>ID Variante:</strong> {{ variante.idVariante }}<br>
+        <strong>Talla:</strong> <span style="font-weight: bold; color: #007bff;">{{ variante.talla }}</span><br>
+        <strong>Stock Actual:</strong> {{ variante.stock }}<br>
+    </div>
+
+    <!-- Formulario para enviar la solicitud POST de eliminación -->
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" 
+                style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Sí, Eliminar Permanentemente
+        </button>
+        
+        <!-- Botón para cancelar y volver al listado de variantes -->
+        <a href="{% url 'gestionar_variantes' uniforme_id=variante.idUniforme.idUniforme %}" 
+           style="margin-left: 15px; color: #6c757d; text-decoration: none;">
+            Cancelar y Volver
+        </a>
+    </form>
+{% endif %}
+
+{% endblock %}

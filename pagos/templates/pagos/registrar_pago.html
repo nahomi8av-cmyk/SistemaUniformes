@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>💵 Registrar Nuevo Pago</h2>
+<hr>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<div style="margin-bottom: 25px; border: 1px solid #ddd; padding: 15px;">
+    <h3>Pedido #{{ pedido.id }} (Cliente: {{ pedido.idCliente.nombre }})</h3>
+    <ul>
+        <li><strong>Total del Pedido:</strong> ${{ pedido.total }}</li>
+        <li><strong>Pagado Anteriormente:</strong> ${{ total_pagado }}</li>
+        <li style="font-size: 1.2em; color: red;"><strong>SALDO PENDIENTE:</strong> ${{ saldo_pendiente|floatformat:2 }}</li>
+    </ul>
+    <p>Caja Abierta: {{ caja_actual.idCaja }} ({{ caja_actual.abierto_por.nombre }})</p>
+</div>
+
+<form method="POST">
+    {% csrf_token %}
+    <div style="margin-bottom: 20px;">
+        <label for="empleado_receptor_id">Empleado que Recibe el Pago:</label>
+        <select name="empleado_receptor_id" id="empleado_receptor_id" required style="padding: 8px; font-size: 1em; width: 300px;">
+            <option value="">--- Seleccionar Empleado ---</option>
+            {% for emp in empleados %}
+                <option value="{{ emp.idEmpleado }}"
+                    {% if emp.user.id == request.user.id %} selected {% endif %}>
+                    {{ emp.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label for="forma_pago">Forma de Pago:</label>
+        <select name="forma_pago" required style="padding: 8px; width: 180px;">
+            {% for forma in formas_pago %}
+                <option value="{{ forma }}">{{ forma }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <label for="monto_abonado">Monto a Abonar:</label>
+        <input type="number" 
+               name="monto_abonado" 
+               value="{{ saldo_pendiente|floatformat:2 }}" 
+               step="0.01" 
+               min="0.01" 
+               max="{{ saldo_pendiente }}"
+               required 
+               style="padding: 10px; font-size: 1.1em; width: 200px; text-align: right;">
+    </div>
+    
+    <button type="submit" style="padding: 10px 20px; background-color: #28a745; color: white;">
+        ✅ Registrar Abono
+    </button>
+</form>
+
+{% endblock %}

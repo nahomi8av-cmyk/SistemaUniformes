@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>✏️ Editar Cliente: {{ cliente.nombre }}</h2>
+<hr>
+
+<form method="POST">
+    {% csrf_token %}
+    
+    <label for="nombre">Nombre del Cliente:</label><br>
+    <input type="text" name="nombre" value="{{ cliente.nombre }}" required style="margin-bottom: 10px; padding: 8px; width: 350px;"><br>
+
+    <label for="telefono">Teléfono:</label><br>
+    <input type="tel" name="telefono" value="{{ cliente.telefono|default:'' }}" style="margin-bottom: 20px; padding: 8px; width: 350px;"><br>
+
+    <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white;">Guardar Cambios</button>
+    <a href="{% url 'lista_clientes' %}" style="margin-left: 15px; color: #6c757d;">Cancelar</a>
+</form>
+
+{% endblock %}

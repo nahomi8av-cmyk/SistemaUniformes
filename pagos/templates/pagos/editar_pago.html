@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Pago #{{ pago.idPago }}{% endblock %}
+
+{% block content %}
+    <h1 style="color: #4CAF50; margin-bottom: 20px;">
+        Editar Pago #{{ pago.idPago }}
+    </h1>
+    
+    {% if error %}
+        <div style="padding: 10px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 20px; border-radius: 4px;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="post" style="max-width: 500px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #fff;">
+        {% csrf_token %}
+
+        <h3 style="margin-top: 0; color: #343a40;">Detalles del Pago</h3>
+        <p><strong>ID Pedido:</strong> <a href="{% url 'pedidos:editar_pedido' pago.idPedido.idPedido %}" style="color: #007bff; text-decoration: none;">#{{ pago.idPedido.idPedido }}</a></p>
+        <p><strong>Cliente:</strong> {{ pago.idPedido.idCliente.nombre }}</p>
+        <p><strong>Recibido Por:</strong> {{ pago.recibido_por.nombre|default:"N/A" }}</p>
+        <p><strong>Fecha de Pago:</strong> {{ pago.fecha_pago|date:"Y-m-d H:i" }}</p>
+
+        <!-- Campo Monto -->
+        <label for="id_monto" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Monto ($):</label>
+        <input type="number" step="0.01" min="0" id="id_monto" name="monto" value="{{ pago.monto|floatformat:2 }}" required 
+               style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
+
+        <!-- Campo Forma de Pago -->
+        <label for="id_forma_pago" style="display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Forma de Pago:</label>
+        <select id="id_forma_pago" name="forma_pago" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
+            {% for key, value in formas_pago %}
+                <option value="{{ key }}" {% if pago.forma_pago == key %}selected{% endif %}>{{ value }}</option>
+            {% endfor %}
+        </select>
+        
+        <button type="submit" style="margin-top: 25px; padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+            Guardar Cambios
+        </button>
+        <a href="{% url 'listar_pagos' %}" style="display: inline-block; margin-left: 10px; margin-top: 25px; color: #6c757d; text-decoration: none; padding: 10px 15px; border: 1px solid #ccc; border-radius: 4px;">
+            Cancelar
+        </a>
+    </form>
+{% endblock %}
